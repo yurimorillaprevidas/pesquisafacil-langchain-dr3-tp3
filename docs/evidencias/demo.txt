@@ -7,7 +7,7 @@ Observação: Crossref: 2 registro(s).
 Ação: buscar_livros({"tema": "machine learning", "limite": 2})
 Observação: Open Library: 2 registro(s).
 
-PesquisaFácil> [Resposta roteirizada de demonstração] Tema: machine learning.
+PesquisaFácil> Tema: machine learning.
 
 Fonte: Crossref
 - Research Papers in Machine Learning — Pat Langley (1987). https://doi.org/10.1023/a%3A1022603230145
@@ -23,7 +23,7 @@ Você> Agora mostre só livros sobre o mesmo tema.
 Ação: buscar_livros({"tema": "machine learning", "limite": 2})
 Observação: Open Library: 2 registro(s).
 
-PesquisaFácil> [Resposta roteirizada de demonstração] Tema: machine learning.
+PesquisaFácil> Tema: machine learning.
 
 Fonte: Open Library
 - Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow — Aurélien Géron (2019). https://openlibrary.org/works/OL20709638W

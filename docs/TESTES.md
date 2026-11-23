@@ -1,88 +1,74 @@
-# Testes e evidências — DR3 TP3
+# Testes
 
-Autor: Yuri Henrique Morilla Lima. Data local: 22/11/2026 (America/Sao_Paulo).
+O projeto foi verificado com Python 3.12.15, LangChain 1.5.2, LangGraph 1.2.24 e
+HTTPX 0.28.1. Os testes automatizados utilizam respostas controladas para os
+serviços externos; o grafo, as ferramentas e o armazenamento do histórico são
+os utilizados pela aplicação.
 
-## O que foi executado
+## Casos de uso
 
-- Python 3.12.15; LangChain 1.5.2; LangGraph 1.2.24; HTTPX 0.28.1.
-- 31 testes automatizados sem rede ou credenciais.
-- `ruff check .` e `ruff format --check .` para código e formatação.
-- Demonstração CLI com duas perguntas e memória no mesmo processo.
-- Consultas reais no Crossref e na Open Library, sem usar um LLM.
+### 1. Buscar artigos e livros
 
-As falhas iniciais dos testes foram observadas antes de implementar os módulos
-de tools, agente e CLI; depois as suítes passaram. A ausência de chave Gemini
-impediu a validação de respostas geradas por um LLM real. Nenhuma execução
-simulada deste relatório deve ser interpretada como teste de qualidade do Gemini.
+**Pedido:** “Encontre 2 artigos e 2 livros sobre machine learning.”
 
-## Casos práticos
+**Esperado:** consultar Crossref e Open Library, reunir os registros e indicar
+a fonte de cada referência.
 
-### UC1 — levantamento inicial em duas fontes
+**Observado:** o teste de integração chamou `buscar_artigos`, recebeu o resultado
+como `ToolMessage` e então chamou `buscar_livros`. A demonstração apresentou os
+quatro registros dos dados salvos. Nas consultas reais, cada API também retornou
+dois registros. Veja [apis_reais.json](evidencias/apis_reais.json).
 
-Pedido da demo: “Encontre 2 artigos e 2 livros sobre machine learning.”
-Esperado: usar ambas as ferramentas, devolver referências e indicar as fontes.
-Observado: o grafo enviou a primeira ação a `buscar_artigos`, recebeu um
-`ToolMessage`, enviou a segunda a `buscar_livros` e apresentou os quatro registros
-dos snapshots. O teste `test_react_observation_drives_second_action_and_final_answer`
-confirma que a observação chega ao modelo antes da próxima ação.
+### 2. Continuar uma pesquisa
 
-Nas consultas reais, os dois serviços retornaram dois registros cada. Entre os
-livros observados está *Hands-On Machine Learning with Scikit-Learn, Keras, and
-TensorFlow*, de Aurélien Géron, com primeira publicação registrada como 2019.
-Esses dados descrevem o catálogo e não uma leitura do livro. A consulta ampla
-também retornou artigos antigos, o que mostra a importância de informar o recorte
-temporal quando isso for necessário. Evidência: [apis_reais.json](evidencias/apis_reais.json).
+**Pedido:** após o caso anterior, “Agora mostre só livros sobre o mesmo tema.”
 
-### UC2 — continuação com memória
+**Esperado:** manter `machine learning` como tema e consultar apenas livros.
 
-Segundo pedido da demo: “Agora mostre só livros sobre o mesmo tema.”
-Esperado: recuperar `machine learning` sem exigir a repetição do assunto.
-Observado: a segunda invocação recebeu o histórico pelo checkpointer, recuperou
-os argumentos anteriores e chamou apenas `buscar_livros` para o mesmo tema.
-Trata-se de uma decisão roteirizada que comprova o transporte de contexto.
-Não é uma evidência de compreensão linguística por Gemini.
+**Observado:** a segunda invocação recuperou o histórico e reutilizou o tema.
+Outro teste conferiu o histórico com o assunto `diabetes`. Depois de iniciar uma
+nova conversa, o modelo de teste deixou de receber o assunto anterior. A
+demonstração também solicita o tema quando a continuação chega sem histórico.
 
-O teste de memória usa outro tema (`diabetes`) e verifica o histórico completo.
-Após `new_conversation()`, o modelo de teste recebe apenas a nova pergunta e
-responde que precisa do tema. O teste da CLI também percorre `/novo` e `/sair`.
+### 3. Restringir o período dos artigos
 
-### UC3 — filtro temporal
+**Entrada:** `buscar_artigos(tema="machine learning", limite=2, ano_minimo=2020)`.
 
-Entrada: `buscar_artigos(tema="machine learning", limite=2, ano_minimo=2020)`.
-Esperado: enviar filtro de data ao serviço, sem filtrar somente depois da busca.
-Observado: o teste verifica a URL e os parâmetros; o script de APIs reais também
-registra a resposta filtrada. O filtro se aplica aos artigos. A tool de livros
-retorna o ano da primeira publicação e não oferece filtro de ano.
+**Esperado:** enviar o filtro temporal ao serviço antes de obter os resultados.
 
-### UC4 — resultados ausentes e falhas
+**Observado:** o teste conferiu o parâmetro
+`filter=type:journal-article,from-pub-date:2020-01-01`. A consulta real filtrada
+está no arquivo de evidências. A ferramenta de livros não aplica esse filtro;
+seu ano corresponde à primeira publicação registrada no catálogo.
 
-Entradas controladas: lista vazia, timeout, HTTP 429, HTTP 503, JSON inválido,
-estrutura inesperada, autoria e data ausentes, limite zero/seis e tema vazio.
-Esperado: preservar a distinção entre ausência de resultados e falha, impedir
-requisição inválida e não inventar referências.
-Observado: ferramentas retornaram listas vazias e/ou códigos de erro apropriados;
-metadados opcionais foram tratados sem quebrar a aplicação. URLs de catálogo
-fora do formato permitido não foram transformadas em links.
-Erros de tipo/campo obrigatório no esquema também retornam JSON com código
-`entrada_invalida`, serializado como texto pelo validador LangChain.
+### 4. Tratar ausência de dados e falhas
 
-### UC5 — limite e configuração
+**Entradas:** tema vazio, limites fora do intervalo, campos obrigatórios ausentes,
+tipos inválidos, lista vazia, timeout, HTTP 429/503 e JSON inesperado.
 
-Esperado: interromper ações repetidas e orientar o uso sem credenciais.
-Observado: um modelo que sempre chama a mesma ferramenta foi interrompido pelo
-limite do grafo e a sessão foi renovada. Sem chave, a CLI explica como configurar
-`GOOGLE_API_KEY` e termina com código 2. Erros inesperados de provedor terminam
-com código 1 na consulta única e não expõem a mensagem bruta nem seus segredos.
-Os testes cobrem tanto `RuntimeError` quanto `ValueError` externo, inclusive
-durante a configuração. Somente exceções locais específicas podem exibir sua
-mensagem. A demo pede o tema quando recebe uma continuação sem histórico.
+**Esperado:** impedir requisições inválidas e distinguir falhas de consultas sem
+resultados. Campos ausentes não devem ser preenchidos com informações inventadas.
 
-## Arquivos e reprodução
+**Observado:** os testes retornaram os códigos de erro previstos e listas vazias
+quando apropriado. Autoria e data ausentes não interromperam a aplicação. Erros
+de esquema retornaram JSON serializado pelo validador do LangChain.
 
-- [Demonstração CLI](evidencias/demo.txt): saída de `python app.py --demo`.
-- [APIs reais](evidencias/apis_reais.json): instante UTC, versões e metadados.
-- [Verificação local](evidencias/verificacao.txt): testes, análise estática e formatação.
-- Snapshots em `data/`: dados mínimos capturados nas duas APIs; a demo é offline.
+### 5. Controlar a execução e reiniciar a conversa
+
+**Esperado:** interromper chamadas repetidas, separar o contexto ao usar `/novo`
+e orientar a configuração quando não houver chave.
+
+**Observado:** o limite de passos interrompeu um modelo que repetia ações e
+renovou a sessão. Os comandos `/novo` e `/sair` passaram pelo teste da interface.
+Sem chave, a consulta encerrou com código 2 e instrução de configuração. Falhas
+externas durante a consulta encerraram com código 1, sem imprimir detalhes
+internos do provedor.
+
+## Resultados e reprodução
+
+Os **31 testes automatizados passaram**. A análise com Ruff e a verificação de
+formatação também passaram. A demonstração executou duas perguntas e três
+chamadas de ferramenta.
 
 ```text
 python -m pytest -q
@@ -92,30 +78,36 @@ python app.py --demo
 python -m scripts.validar_servicos
 ```
 
-Os testes automáticos substituem apenas os serviços externos lentos/cobrados.
-O grafo LangChain, as tools, a normalização e o checkpointer são os reais.
-Já o script de serviços chama as APIs públicas; seus resultados podem variar.
+- [Execução da demonstração](evidencias/demo.txt).
+- [Resultados das APIs reais](evidencias/apis_reais.json).
+- [Testes e verificações locais](evidencias/verificacao.txt).
 
-## Validação com Gemini — pendente
+As cópias dos dados em `data/` tornam a demonstração reproduzível sem internet.
+O script `validar_servicos` consulta as APIs reais; os resultados podem mudar
+conforme o catálogo ou a disponibilidade dos serviços.
 
-Após preencher `.env`, executar no chat real:
+## Validação com Gemini
 
-| Pedido | Verificar |
+Esta etapa permanece pendente porque não havia uma chave de API configurada.
+Os testes controlados verificam a integração e a memória, mas não avaliam a
+qualidade das respostas de Gemini.
+
+Após preencher `.env`, executar `python app.py --rastro` e realizar os pedidos:
+
+| Pedido | Critério de aprovação |
 | --- | --- |
-| “Busque 2 artigos sobre aprendizado de máquina em educação desde 2020.” | Tool de artigos com `ano_minimo=2020`, títulos e DOIs iguais aos retornados |
-| “Agora 2 livros sobre o mesmo tema.” | Tema mantido e tool de livros chamada |
-| “Liste apenas as referências que você encontrou.” | Nenhuma referência adicionada sem observação que a sustente |
+| “Busque 2 artigos sobre aprendizado de máquina em educação desde 2020.” | Chamada de artigos com o filtro de ano; título, autoria e DOI iguais aos retornados |
+| “Agora encontre 2 livros sobre o mesmo tema.” | Tema mantido e ferramenta de livros utilizada |
+| “Liste somente as referências que você encontrou.” | Nenhum registro incluído sem apoio nos resultados anteriores |
 | `/novo`, seguido de “Quero livros sobre o mesmo tema.” | Solicitação de esclarecimento por falta do assunto |
 
-Critérios: fonte correta, fidelidade a título/autoria/data/link, coerência da
-continuação, tratamento de falhas e ausência de alegações de leitura integral.
-Registrar nome do modelo, data e resultado de cada pedido ao concluir essa etapa.
-Não há resultados inventados ou marcação de aprovação para esta validação.
+Registrar o modelo, a data, as chamadas realizadas e a resposta observada para
+cada pedido. A conversa deve informar fontes e não alegar leitura dos textos
+integrais. Esta etapa é necessária para concluir a validação prática com o LLM.
 
-## Comparação com a execução manual
+## Comparação com o processo manual
 
-Sem o agente, o estudante precisa formular a consulta em cada serviço, recolher
-os metadados, reunir a lista e repetir o processo a cada refinamento. O agente
-centraliza essas operações e carrega o contexto entre pedidos. A seleção crítica
-das referências e a leitura dos textos permanecem responsabilidade do estudante.
-O ganho de tempo é uma hipótese fundamentada no fluxo, não uma medida coletada.
+Na abordagem manual, cada serviço precisa ser consultado separadamente e os
+metadados precisam ser reunidos pelo estudante. O agente centraliza as consultas
+e mantém o contexto dos refinamentos. A conferência das referências e a análise
+crítica dos textos continuam necessárias. Não foi medida uma economia de tempo.

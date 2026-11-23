@@ -1,5 +1,5 @@
 {
-  "instante_utc": "2026-11-23T00:07:53.942276+00:00",
+  "instante_utc": "2026-11-23T02:36:19.516862+00:00",
   "tipo": "APIs reais, sem execução do modelo Gemini",
   "python": "3.12.15",
   "versoes": {
@@ -11,7 +11,7 @@
     {
       "fonte": "Crossref",
       "consulta": "machine learning",
-      "total_encontrado": 1790390,
+      "total_encontrado": 1790447,
       "resultados": [
         {
           "titulo": "Machine Learning and Concept Formation",
@@ -62,7 +62,7 @@
     {
       "fonte": "Crossref",
       "consulta": "machine learning",
-      "total_encontrado": 1168086,
+      "total_encontrado": 1168143,
       "resultados": [
         {
           "titulo": "Machine learning for labor market matching",

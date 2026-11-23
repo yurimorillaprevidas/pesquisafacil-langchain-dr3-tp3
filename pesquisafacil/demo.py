@@ -20,7 +20,7 @@ DEMO_QUESTIONS = [
 
 
 class DemoModel(BaseChatModel):
-    """Modelo roteirizado para os dois pedidos de DEMO_QUESTIONS, sem inteligência LLM."""
+    """Respostas programadas para os dois exemplos de DEMO_QUESTIONS."""
 
     @property
     def _llm_type(self) -> str:
@@ -65,7 +65,7 @@ class DemoModel(BaseChatModel):
                 ],
             )
         else:
-            lines = [f"[Resposta roteirizada de demonstração] Tema: {theme}."]
+            lines = [f"Tema: {theme}."]
             for observation in observations:
                 data = json.loads(observation.content)
                 lines.append(f"\nFonte: {data['fonte']}")

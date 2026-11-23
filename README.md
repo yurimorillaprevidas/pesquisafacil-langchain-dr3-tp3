@@ -1,55 +1,50 @@
-# PesquisaFácil — agente bibliográfico com LangChain
+# PesquisaFácil
 
-**Autor:** Yuri Henrique Morilla Lima
+**Yuri Henrique Morilla Lima**
 
-**Disciplina:** Desenvolvimento de Data-Driven Apps com Python [26E4_3]
+Desenvolvimento de Data-Driven Apps com Python [26E4_3] — DR3 TP3
 
-**Atividade:** DR3 — TP3
+[Repositório no GitHub](https://github.com/yurimorillaprevidas/pesquisafacil-langchain-dr3-tp3)
 
-**Repositório público:** [pesquisafacil-langchain-dr3-tp3](https://github.com/yurimorillaprevidas/pesquisafacil-langchain-dr3-tp3)
+## Problema e objetivo
 
-O PesquisaFácil ajuda estudantes a iniciar uma pesquisa bibliográfica: busca
-artigos no Crossref, livros na Open Library e mantém o contexto dos pedidos na
-conversa. O projeto usa Python, LangChain, o padrão ReAct e memória conversacional.
+O levantamento bibliográfico exige pesquisar em diferentes catálogos, reunir
+títulos, autores e links e repetir as consultas quando o tema é refinado. O
+PesquisaFácil reúne esse trabalho em uma conversa: busca artigos no Crossref e
+livros na Open Library, organiza os metadados e mantém o assunto dos pedidos
+anteriores.
 
-**Situação da validação:** 31 testes automatizados passaram, as duas APIs foram
-consultadas com sucesso e a demonstração do grafo e da memória foi executada.
-**A geração com Gemini não foi executada nesta entrega**, pois o ambiente não
-dispunha de chave. O modo real requer sua chave; a demonstração usa um modelo
-roteirizado e snapshots, e não comprova a qualidade das respostas de um LLM.
-As evidências e o roteiro de validação real estão em [docs/TESTES.md](docs/TESTES.md).
+A aplicação é voltada a estudantes de graduação e pesquisadores iniciantes.
+Seu objetivo é ajudar na seleção inicial de referências, com indicação da fonte
+de cada registro. A leitura dos textos e a avaliação da qualidade das publicações
+continuam sendo feitas pelo estudante.
 
-## 1. Problema e solução
+As funcionalidades são:
 
-Quem começa um trabalho acadêmico costuma pesquisar em catálogos diferentes,
-copiar títulos e identificadores e refazer buscas quando muda o recorte. Isso
-dificulta reunir uma lista inicial de referências e manter critérios consistentes.
+- Busca de artigos por tema, com filtro opcional de ano inicial.
+- Busca de livros por tema.
+- Apresentação de título, autoria, ano e link.
+- Continuação da pesquisa sem precisar repetir o assunto.
+- Reinício da conversa e exibição das ferramentas utilizadas.
 
-**Público-alvo:** estudantes de graduação, iniciantes em pesquisa e professores
-que orientam o levantamento inicial de referências.
+## Instalação e execução
 
-**Objetivo:** centralizar a descoberta de artigos e livros em uma conversa com
-fontes verificáveis. O agente seleciona a ferramenta conforme a solicitação,
-consulta dados externos e organiza uma resposta com título, autoria, ano e link.
-Também interpreta continuações como “agora apenas livros sobre o mesmo tema”.
-
-Funcionalidades: busca por tema, filtro de ano inicial para artigos, duas fontes
-bibliográficas, memória por conversa, consulta única, chat e registro de ações.
-Não há leitura automática do texto integral, revisão sistemática completa ou
-avaliação automática da qualidade científica.
-
-## 2. Execução
-
-Use **Python 3.12**, versão com que o projeto foi testado. Também é possível
-instalar com Python 3.13/3.14, mas essas versões não foram validadas nesta entrega.
-Os comandos abaixo são executados dentro da pasta do projeto extraído ou clonado.
+O projeto foi testado com **Python 3.12**. Execute os comandos dentro da pasta
+extraída do ZIP ou clonada do repositório.
 
 ### Windows — PowerShell
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe app.py --demo
+Copy-Item .env.example .env
+```
+
+Edite `.env` e preencha `GOOGLE_API_KEY` com uma chave obtida no
+[Google AI Studio](https://aistudio.google.com/apikey). Depois, inicie a aplicação:
+
+```powershell
+.\.venv\Scripts\python.exe app.py
 ```
 
 ### Linux e macOS
@@ -57,147 +52,124 @@ python -m venv .venv
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python app.py --demo
+cp .env.example .env
+# Preencha GOOGLE_API_KEY em .env.
+.venv/bin/python app.py
 ```
 
-O arquivo `requirements.txt` fixa as versões usadas na verificação e inclui pytest
-e Ruff. As dependências diretas ficam em `pyproject.toml`. Não é preciso ativar o
-ambiente virtual; usar o executável completo evita restrições do PowerShell.
+O arquivo de configuração contém:
 
-### Modo real com Gemini
-
-1. Crie uma chave no [Google AI Studio](https://aistudio.google.com/apikey).
-2. Copie `.env.example` para `.env`, na raiz do projeto.
-3. Preencha `GOOGLE_API_KEY` no arquivo local. Não publique esse arquivo.
-4. Inicie o chat:
-
-```powershell
-Copy-Item .env.example .env
-# Edite .env antes de executar a próxima linha.
-.\.venv\Scripts\python.exe app.py
+```dotenv
+GOOGLE_API_KEY=sua_chave
+GEMINI_MODEL=gemini-3.5-flash-lite
 ```
 
-O modelo configurado é `gemini-3.5-flash-lite`, com os parâmetros de amostragem
-padrão do modelo, timeout de 30 segundos e uma tentativa total por chamada ao
-provedor (`max_retries=1` nesta versão do adaptador). É um modelo com suporte a
-function calling, adequado a este fluxo de seleção de ferramentas; o nome pode
-ser alterado por `GEMINI_MODEL` no `.env`. Disponibilidade, cotas e eventuais
-cobranças dependem da conta Google. Veja a [documentação do modelo](https://aistudio.google.com/docs/models/gemini-3.5-flash-lite)
-e a [integração oficial LangChain](https://docs.langchain.com/oss/python/integrations/chat/google_generative_ai).
+O modelo é integrado pelo pacote `langchain-google-genai` e pode ser alterado
+pela variável `GEMINI_MODEL`. A escolha considera o suporte a chamadas de
+ferramentas e o uso em consultas curtas. São usados os parâmetros de amostragem
+padrão do modelo, timeout de 30 segundos e uma tentativa por chamada ao provedor.
+O uso depende da disponibilidade e da cota da conta Google. O arquivo `.env` é
+ignorado pelo Git e não deve ser publicado.
 
-Exemplo de conversa a executar com sua chave:
+### Como utilizar
 
 ```text
-Você> Busque 3 artigos sobre aprendizado de máquina em educação desde 2020.
+Você> Busque 2 artigos sobre aprendizado de máquina em educação desde 2020.
 Você> Agora encontre 2 livros sobre o mesmo tema.
-Você> Organize os resultados que já encontrou em uma lista de leitura.
+Você> Organize as referências que já encontrou em uma lista de leitura.
 Você> /novo
 Você> /sair
 ```
 
-Outras opções:
+`/novo` inicia uma conversa sem o contexto anterior. `/sair` encerra o programa.
+Também é possível enviar uma pergunta única ou consultar o retorno das ferramentas:
 
 ```powershell
 .\.venv\Scripts\python.exe app.py --pergunta "Encontre 2 livros sobre Python"
 .\.venv\Scripts\python.exe app.py --rastro
-.\.venv\Scripts\python.exe app.py --demo --rastro
 .\.venv\Scripts\python.exe app.py --help
 ```
 
-`/novo` inicia outro contexto; `/sair` encerra. As ações e observações resumidas
-aparecem após cada resposta. `--rastro` mostra o retorno completo das ferramentas;
-não expõe raciocínio interno do modelo.
+Para conhecer a interface sem configurar uma chave:
 
-### Demonstração sem chave
-
-`--demo` executa dois pedidos fixos: buscar artigos e livros sobre `machine learning`
-e depois apenas livros sobre o mesmo tema. Usa o **mesmo grafo LangChain, as mesmas
-tools e o mesmo checkpointer** do modo real. Somente o modelo e o transporte HTTP
-são substituídos por um roteiro e por snapshots das APIs, coletados em 22/11/2026
-(horário de São Paulo). Não aceita perguntas livres e não acessa a rede.
-
-## 3. Ferramentas externas
-
-| Nome | Finalidade e parâmetros | Serviço externo | Retorno |
-| --- | --- | --- | --- |
-| `buscar_artigos` | Pesquisar tema, limite de 1 a 5 e `ano_minimo` opcional | `https://api.crossref.org/works` | Título, autores, ano, publicação, DOI e link |
-| `buscar_livros` | Pesquisar tema e limite de 1 a 5 | `https://openlibrary.org/search.json` | Título, autores, primeira publicação e link do catálogo |
-
-Cada função é registrada com `@tool`, assinatura tipada e descrição para orientar
-o LLM. As duas APIs são consultadas via HTTPX e não exigem chave neste projeto.
-Os resultados são normalizados em JSON; a integração transmite os esquemas das
-tools ao Gemini para que ele escolha nome e argumentos. As APIs e seus parâmetros
-estão documentados no [Crossref](https://www.crossref.org/documentation/retrieve-metadata/rest-api/)
-e na [Open Library](https://openlibrary.org/dev/docs/api/search).
-
-Exemplo: `buscar_artigos(tema="machine learning", limite=2, ano_minimo=2020)`
-envia `query.bibliographic`, `rows=2` e
-`filter=type:journal-article,from-pub-date:2020-01-01` ao Crossref.
-
-As consultas têm timeout, identificação de aplicação no User-Agent e limite de
-resultados. Entrada inválida, timeout, HTTP 429, indisponibilidade e JSON
-inesperado geram mensagens controladas. Dados ausentes permanecem explicitamente
-ausentes; o código não cria autores, datas ou links para completar o cadastro.
-
-## 4. ReAct e lógica do agente
-
-O padrão ReAct alterna decisões do modelo com ações no ambiente e observações.
-Aqui, o ciclo é implementado por `langchain.agents.create_agent`, sobre LangGraph.
-Não se usa uma sequência fixa de chamadas no modo real: o modelo decide consultar
-uma ou duas fontes, formular outro pedido ou responder. Consulte a
-[documentação de agentes](https://docs.langchain.com/oss/python/langchain/agents)
-e o [trabalho original ReAct](https://github.com/ysymyth/ReAct).
-
-```mermaid
-flowchart LR
-    U[Pedido do estudante] --> M[Modelo com histórico e prompt]
-    M -->|Ação: nome e argumentos| T[Tool Crossref ou Open Library]
-    T -->|Observação: metadados ou erro| M
-    M -->|Resposta final| R[Referências com fontes]
-    C[Memória da conversa] <--> M
+```powershell
+.\.venv\Scripts\python.exe app.py --demo
 ```
 
-1. A CLI valida a entrada e envia a mensagem com um `thread_id`.
-2. O checkpointer recupera o histórico dessa conversa.
-3. O modelo recebe o objetivo, os esquemas das ferramentas e o histórico.
-4. Se produzir `tool_calls`, o grafo executa as ferramentas.
-5. O resultado é adicionado como `ToolMessage` e retorna ao modelo.
-6. O ciclo termina quando o modelo produz a resposta sem novas chamadas.
+Essa demonstração executa dois exemplos fixos com respostas programadas e cópias
+de dados das APIs. Ela utiliza o grafo e a memória do projeto, mas não chama Gemini
+nem faz novas consultas à internet. O aviso de simulação aparece ao iniciar.
 
-O limite é de 24 passos do grafo por pergunta. Ao atingir o limite, a aplicação
-informa a falha e inicia outro contexto. O prompt orienta o uso de fontes,
-a preservação do tema e o tratamento de metadados como dados não confiáveis.
-Essas instruções reduzem erros, mas não garantem a precisão de um LLM.
+## Ferramentas externas
 
-## 5. Memória conversacional
+As duas funções de pesquisa são registradas no LangChain com `@tool`, nome,
+descrição e parâmetros tipados. A comunicação HTTP é feita com HTTPX.
 
-`InMemorySaver` armazena as mensagens do agente por `thread_id`, incluindo pedidos,
-respostas, chamadas e observações. Na próxima pergunta, o mesmo identificador
-recupera esse histórico. Isso permite associar “mesmo tema” ao assunto anterior.
-A implementação segue a [memória de curto prazo do LangChain](https://docs.langchain.com/oss/python/langchain/short-term-memory).
+| Ferramenta | Função | Parâmetros | Dados retornados |
+| --- | --- | --- | --- |
+| `buscar_artigos` | Consultar artigos no Crossref | `tema`, `limite` e `ano_minimo` opcional | Título, autores, ano, periódico, DOI e link |
+| `buscar_livros` | Consultar livros na Open Library | `tema` e `limite` | Título, autores, ano da primeira publicação e link do catálogo |
 
-Uma nova conversa usa outro identificador. Os checkpoints anteriores continuam
-na RAM até o processo terminar, mas não são enviados como contexto da conversa
-nova. Nada é salvo em banco; fechar o programa perde o histórico. Para conversas
-longas, seria necessário resumir ou limitar mensagens. No modo real, o histórico
-é enviado ao provedor LLM e os termos de pesquisa são enviados às APIs.
+`tema` aceita de 1 a 300 caracteres e `limite` aceita de 1 a 5 resultados por
+consulta. Para artigos, `ano_minimo` deve estar entre 1500 e 2100. Esse filtro é
+enviado ao Crossref; a ferramenta de livros não oferece filtro temporal.
 
-## 6. Casos de uso e resultados observados
+As APIs não exigem chave nas consultas implementadas. Erros de entrada, timeout,
+limite de requisições e respostas inválidas são tratados separadamente. Campos
+ausentes são identificados como não informados. As ferramentas retornam JSON
+com os registros encontrados ou uma descrição do erro.
 
-| Caso | Critério de validação | Resultado observado |
+## ReAct e funcionamento do agente
+
+O agente é criado em `pesquisafacil/agent.py` com `langchain.agents.create_agent`,
+usando Gemini como modelo e as duas ferramentas de pesquisa. O ciclo segue o
+padrão ReAct:
+
+1. O modelo recebe o pedido, as instruções e o histórico da conversa.
+2. Decide se precisa consultar uma ferramenta e escolhe seus argumentos.
+3. O LangChain executa a chamada e devolve o resultado como uma observação.
+4. O modelo considera o resultado e pode realizar outra consulta.
+5. Quando possui informação suficiente, apresenta a resposta ao usuário.
+
+Por exemplo, um pedido de artigos e livros pode começar com uma busca no
+Crossref. Após receber os artigos, o agente consulta a Open Library e reúne as
+duas fontes na resposta. No modo com Gemini, a seleção das ferramentas depende
+do pedido e das observações, em vez de seguir uma sequência fixa.
+
+A interface mostra as ações e um resumo dos resultados. `--rastro` exibe as
+observações completas. O processamento é limitado a 24 passos por pergunta para
+interromper chamadas repetidas. O prompt orienta o agente a citar somente os
+dados recebidos e a informar falhas ou ausência de resultados.
+
+## Memória conversacional
+
+O histórico é mantido por `InMemorySaver`, do LangGraph. Cada conversa possui um
+`thread_id`; as perguntas seguintes usam o mesmo identificador para recuperar
+pedidos, respostas e resultados das ferramentas.
+
+Isso permite continuar com “agora apenas livros sobre o mesmo tema”. O comando
+`/novo` muda o identificador, separando o contexto da conversa anterior. O histórico
+fica somente na memória do processo e é perdido ao fechar o programa. No modo
+com Gemini, esse histórico é enviado ao provedor para compor o contexto.
+
+## Casos de uso e testes
+
+| Caso | Validação | Resultado observado |
 | --- | --- | --- |
-| Encontrar artigos e livros | Consultar ambas as fontes e apresentar referências | Duas APIs reais retornaram 2 registros cada; o grafo simulado executou as duas tools em sequência |
-| Refinar “mesmo tema” | Preservar o assunto da pergunta anterior | Histórico entregue ao modelo de teste; demo reutilizou `machine learning` na segunda pergunta |
-| Restringir artigos por ano | Enviar filtro temporal ao Crossref | Teste verificou `from-pub-date:2020-01-01`; consulta real filtrada registrada nas evidências |
-| Falha ou ausência de dados | Informar o problema e não inventar registros | Testes cobrem vazio, timeout, 429, 503, JSON inválido e metadados ausentes |
-| Começar outra conversa | Não recuperar assunto do contexto anterior | Teste com `/novo` e teste de sessão passaram |
-| Evitar execução sem fim | Interromper modelo que repete ações | Teste do limite de passos passou e o identificador da sessão foi renovado |
+| Pesquisar artigos e livros | Consultar ambas as fontes e reunir referências | As APIs retornaram dois registros cada; o teste de integração percorreu as duas ferramentas |
+| Continuar a pesquisa | Recuperar o tema da pergunta anterior | O histórico chegou à segunda invocação e o tema foi mantido nos testes |
+| Filtrar artigos por ano | Enviar o filtro temporal ao Crossref | O parâmetro foi conferido no teste e a consulta filtrada foi executada na API |
+| Iniciar outra conversa | Separar o contexto anterior | Os testes de sessão e do comando `/novo` passaram |
+| Tratar falhas | Informar problemas sem inventar registros | Foram testados timeout, HTTP 429/503, listas vazias, JSON inválido e campos ausentes |
+| Interromper repetições | Aplicar o limite de passos | O teste interrompeu o ciclo e iniciou outra sessão |
 
-Não foi medida economia de tempo nem taxa de acerto de respostas Gemini.
-O detalhamento, os comandos e a distinção entre simulação e execução real estão em
-[docs/TESTES.md](docs/TESTES.md). O roteiro com LLM real permanece pendente.
+Foram executados **31 testes automatizados**, a demonstração em linha de comando
+e consultas reais às duas APIs. Os testes do agente usam respostas controladas
+para conferir ferramentas e memória. **A validação da conversa com Gemini permanece
+pendente, pois não havia chave configurada no ambiente de teste.** O roteiro e as
+evidências estão em [docs/TESTES.md](docs/TESTES.md).
 
-## 7. Testes e qualidade
+Comandos de verificação:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
@@ -206,61 +178,58 @@ O detalhamento, os comandos e a distinção entre simulação e execução real 
 .\.venv\Scripts\python.exe -m scripts.validar_servicos
 ```
 
-Os testes automatizados usam o grafo real com um modelo controlado e transporte
-HTTP de teste; não precisam de credenciais nem internet. A verificação de serviços
-consulta a rede e grava `docs/evidencias/apis_reais.json`. Resultados ao vivo
-podem mudar conforme o catálogo ou a disponibilidade das APIs.
+O último comando consulta as APIs reais e salva o resultado em
+`docs/evidencias/apis_reais.json`. Os demais testes não precisam de internet ou
+credenciais. O workflow do GitHub executa testes, análise estática, formatação e
+demonstração a cada atualização do repositório.
 
-O workflow em `.github/workflows/tests.yml` executa testes, análise estática,
-formatação e demonstração em cada push/PR, sem usar chaves.
-
-## 8. Estrutura
+## Organização do código
 
 ```text
-app.py                         Entrada executável
-pesquisafacil/
-  agent.py                     Prompt, Gemini, grafo ReAct e memória
-  tools.py                     Validação, consultas e normalização de metadados
-  cli.py                       Interface e tratamento de falhas
-  demo.py                      Modelo roteirizado e snapshots offline
-data/                          Snapshots mínimos usados na demonstração
-tests/                         Testes de ferramentas, agente e interface
-scripts/validar_servicos.py     Verificação das APIs reais
-docs/TESTES.md                 Casos práticos, evidências e limitações
-docs/evidencias/               Registros de execução
-.env.example                   Configuração de exemplo sem segredo
-requirements.txt               Dependências fixadas, incluindo testes
-pyproject.toml                 Dependências diretas e ferramentas de qualidade
+app.py                       Entrada do programa
+pesquisafacil/agent.py        Modelo, instruções, ciclo ReAct e memória
+pesquisafacil/tools.py        Consultas, validação e normalização de metadados
+pesquisafacil/cli.py          Interface de linha de comando
+pesquisafacil/demo.py         Demonstração offline
+tests/                       Testes das ferramentas, do agente e da interface
+scripts/validar_servicos.py   Verificação das APIs reais
+data/                        Dados utilizados pela demonstração
+docs/TESTES.md               Casos de uso e resultados
+docs/REQUISITOS.md           Conferência dos itens do enunciado
+docs/evidencias/             Registros de execução
+requirements.txt             Versões das dependências
+.env.example                 Exemplo de configuração
 ```
 
-O código separa interface, agente e integração externa, usa nomes descritivos,
-tipagem e comentários para decisões que não são óbvias. Chaves são lidas do
-ambiente; erros brutos do provedor não são impressos. O repositório ignora `.env`,
-caches e ambientes virtuais.
+Os módulos separam a interface, o agente e o acesso aos serviços externos. O
+código usa nomes descritivos, parâmetros tipados e comentários sobre decisões
+de implementação. As mensagens brutas de erro do provedor não são exibidas.
 
-## 9. Reflexão: agente e abordagem manual
+## Comparação com a pesquisa manual
 
-| Trabalho | Sem o agente | Com o agente |
-| --- | --- | --- |
-| Descobrir referências | Abrir cada catálogo e formular cada busca | Expressar o objetivo e deixar o agente escolher as ferramentas |
-| Reunir metadados | Copiar títulos, autoria, ano e links individualmente | Receber resultados normalizados das fontes consultadas |
-| Refinar o recorte | Repetir tema e critérios em buscas separadas | Continuar a conversa usando o histórico |
-| Conferir fontes | Verificar cada registro e o texto integral | A verificação humana continua necessária, com links reunidos |
+Sem o agente, o estudante precisa abrir cada catálogo, definir as consultas,
+copiar os metadados e reunir as referências. Ao mudar o recorte, precisa repetir
+parte desse processo. A aplicação centraliza as consultas e reaproveita o contexto
+da conversa para os próximos pedidos.
 
-O principal benefício esperado é reduzir o trabalho de coordenação e repetição
-das buscas. As tools agregam dados atuais, enquanto o LLM transforma a solicitação
-em ações e organiza a apresentação. As validações locais comprovam a integração
-e a memória, mas uma avaliação com estudantes e LLM real seria necessária para
-quantificar esse benefício e verificar relevância, fidelidade e usabilidade.
+O benefício esperado é reduzir a repetição e a organização manual das buscas.
+As ferramentas fornecem dados dos catálogos, e o modelo decide como utilizá-las
+e apresentar os resultados. O agente não substitui a conferência das referências
+nem a leitura dos textos. Não foi realizado um estudo de tempo ou de precisão
+com usuários para medir esse benefício.
 
-Uma aplicação convencional também poderia consultar as APIs por formulários.
-O agente acrescenta flexibilidade para compreender pedidos em linguagem natural,
-selecionar fontes e adaptar a próxima ação ao retorno, ao custo de depender do
-modelo, da rede, de cotas e da qualidade dos metadados.
+## Entrega
 
-## 10. Entrega
+O arquivo `Yuri_Henrique_Morilla_Lima_DR3_TP3.ZIP` contém os arquivos `.py`, o
+README, as dependências, os testes e as evidências. Não contém chaves nem ambiente
+virtual. O repositório é público e está indicado no início deste documento.
 
-O ZIP `Yuri_Henrique_Morilla_Lima_DR3_TP3.ZIP` inclui os arquivos `.py`, o README,
-as dependências, os testes e as evidências. Não inclui chaves ou ambiente virtual.
-Extraia antes de executar. O repositório deve permanecer público ou acessível
-ao avaliador. A submissão no ambiente acadêmico é feita pelo autor.
+## Referências técnicas
+
+- [Agentes no LangChain](https://docs.langchain.com/oss/python/langchain/agents)
+- [Memória de curto prazo](https://docs.langchain.com/oss/python/langchain/short-term-memory)
+- [Integração com Gemini](https://docs.langchain.com/oss/python/integrations/chat/google_generative_ai)
+- [Modelo Gemini configurado](https://aistudio.google.com/docs/models/gemini-3.5-flash-lite)
+- [ReAct](https://github.com/ysymyth/ReAct)
+- [API do Crossref](https://www.crossref.org/documentation/retrieve-metadata/rest-api/)
+- [API da Open Library](https://openlibrary.org/dev/docs/api/search)
