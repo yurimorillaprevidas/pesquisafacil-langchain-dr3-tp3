@@ -54,5 +54,5 @@ O grafo e o prompt ficam em `agent.py`; a CLI em `cli.py`; a simulação em `dem
 - [x] Testar entrada inválida, chave ausente e comandos `/novo` e `/sair`.
 - [x] Implementar e executar `pytest`, `ruff check`, `ruff format --check`.
 - [x] Rodar demonstração e APIs reais; documentar saídas e limitações.
-- [ ] Revisar segurança, requisitos e execução a partir do ZIP extraído.
-- [ ] Publicar repositório público e criar ZIP com nome informado pelo autor.
+- [x] Revisar segurança, requisitos e execução a partir do ZIP extraído.
+- [x] Publicar repositório público e criar ZIP com nome informado pelo autor.

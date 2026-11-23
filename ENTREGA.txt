@@ -1,0 +1,19 @@
+Autor: Yuri Henrique Morilla Lima
+Disciplina: Desenvolvimento de Data-Driven Apps com Python [26E4_3]
+Atividade: DR3 TP3
+Projeto: PesquisaFácil — agente de pesquisa bibliográfica
+
+Repositório público:
+https://github.com/yurimorillaprevidas/pesquisafacil-langchain-dr3-tp3
+
+Extraia o ZIP e siga README.md. O arquivo principal é app.py.
+Teste rápido após instalar requirements.txt: python app.py --demo
+
+Inclui código .py, duas tools externas, ReAct, memória, CLI, 31 testes e evidências.
+Não inclui chaves ou ambiente virtual.
+
+As APIs reais foram verificadas. A demonstração do agente usa modelo roteirizado.
+Para usar Gemini, preencha GOOGLE_API_KEY em um arquivo .env local.
+A validação de respostas com Gemini real permanece pendente por ausência de chave.
+
+A submissão no ambiente acadêmico deve ser realizada pelo autor.

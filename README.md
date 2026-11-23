@@ -6,6 +6,8 @@
 
 **Atividade:** DR3 — TP3
 
+**Repositório público:** [pesquisafacil-langchain-dr3-tp3](https://github.com/yurimorillaprevidas/pesquisafacil-langchain-dr3-tp3)
+
 O PesquisaFácil ajuda estudantes a iniciar uma pesquisa bibliográfica: busca
 artigos no Crossref, livros na Open Library e mantém o contexto dos pedidos na
 conversa. O projeto usa Python, LangChain, o padrão ReAct e memória conversacional.
