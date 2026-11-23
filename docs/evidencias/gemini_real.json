@@ -1,0 +1,122 @@
+{
+  "inicio_utc": "2026-11-23T02:46:53.725697+00:00",
+  "modelo": "gemini-3.5-flash-lite",
+  "python": "3.12.15",
+  "versoes": {
+    "langchain": "1.5.2",
+    "langchain-google-genai": "4.5.2",
+    "langgraph": "1.2.24",
+    "httpx": "0.28.1"
+  },
+  "casos": [
+    {
+      "id": "artigos",
+      "pedido": "Busque 2 artigos sobre aprendizado de máquina em educação desde 2020.",
+      "criterios": [
+        "Utilizar buscar_artigos com ano_minimo=2020.",
+        "Apresentar título, autoria, ano e link de dois artigos encontrados.",
+        "Manter os metadados recebidos da ferramenta."
+      ],
+      "conversa": "76e52bbb45c242ee8d77c1eb7019c6ec",
+      "status": "executado",
+      "resposta": "Consulta realizada no Crossref em inglês (\"machine learning in education\") com filtro a partir de 2020. Encontrei 2 artigos:\n\n1. **Online Education User Behaviour Based on Machine Learning**\n   - **Autores:** Não informados nos metadados da fonte.\n   - **Ano:** 2022\n   - **DOI/Link:** [10.38007/ml.2022.030403](https://doi.org/10.38007/ml.2022.030403)\n   - **Publicação:** *Machine Learning Theory and Practice*\n\n2. **ChatGPT in English Learning: A Machine Learning Perspective**\n   - **Autor:** Shinjae Park\n   - **Ano:** 2025\n   - **DOI/Link:** [10.46392/kjge.2025.19.2.191](https://doi.org/10.46392/kjge.2025.19.2.191)\n   - **Publicação:** *Korean Journal of General Education*\n\n**Como começar sua pesquisa:**\nUtilize os links DOI fornecidos para acessar as páginas oficiais das publicações. Como não realizei a leitura dos textos integrais, recomendo verificar os resumos (*abstracts*) diretamente nas plataformas de origem para avaliar se os enfoques (seja comportamento de usuário em EAD ou uso de IA generativa no aprendizado de inglês) alinham-se ao seu escopo de estudo. Note que o acesso ao texto completo depende de assinatura ou políticas da editora.",
+      "acoes": [
+        {
+          "ferramenta": "buscar_artigos",
+          "argumentos": {
+            "limite": 2,
+            "tema": "machine learning in education",
+            "ano_minimo": 2020
+          }
+        }
+      ],
+      "observacoes": [
+        {
+          "ferramenta": "buscar_artigos",
+          "resultado": "{\"fonte\": \"Crossref\", \"consulta\": \"machine learning in education\", \"total_encontrado\": 2243882, \"resultados\": [{\"titulo\": \"Online Education User Behaviour Based on Machine Learning\", \"autores\": [], \"ano\": 2022, \"doi\": \"10.38007/ml.2022.030403\", \"url\": \"https://doi.org/10.38007/ml.2022.030403\", \"publicacao\": \"Machine Learning Theory and Practice\"}, {\"titulo\": \"ChatGPT in English Learning: A Machine Learning Perspective\", \"autores\": [\"Shinjae Park\"], \"ano\": 2025, \"doi\": \"10.46392/kjge.2025.19.2.191\", \"url\": \"https://doi.org/10.46392/kjge.2025.19.2.191\", \"publicacao\": \"Korean Journal of General Education\"}]}"
+        }
+      ],
+      "avaliacao": "aprovado",
+      "resultado_observado": "Dois artigos de 2022 e 2025, com filtro de 2020. Títulos, autoria disponível e links conferidos."
+    },
+    {
+      "id": "livros_com_memoria",
+      "pedido": "Agora encontre 2 livros sobre o mesmo tema.",
+      "criterios": [
+        "Preservar o tema de aprendizado de máquina em educação.",
+        "Utilizar buscar_livros e apresentar dois registros da fonte."
+      ],
+      "conversa": "76e52bbb45c242ee8d77c1eb7019c6ec",
+      "status": "executado",
+      "resposta": "Busca realizada no Open Library com a expressão refinada `\"machine learning in education\"`. Encontrei 2 livros pertinentes:\n\n1. **Analysis of a Machine Learning in Education System**\n   - **Autores:** Lata Menon, Pradip P. Chatterjjee e Prof. Mange Amar Vilasrao\n   - **Ano da primeira publicação:** 2022\n   - **Link:** [Open Library](https://openlibrary.org/works/OL28437669W)\n\n2. **Machine Learning in Educational Sciences**\n   - **Autor:** Myint Swe Khine\n   - **Ano da primeira publicação:** 2024\n   - **Link:** [Open Library](https://openlibrary.org/works/OL37589506W)\n\n*(Nota: O catálogo do Open Library retornou 2 registros pertinentes para esta expressão mais específica, atingindo o limite de itens encontrados para essa busca).*\n\n**Como começar sua pesquisa:**\nAcesse os links do catálogo para verificar a disponibilidade de empréstimo ou detalhes adicionais sobre as obras. A leitura dos sumários e introduções ajudará a identificar abordagens teóricas e práticas sobre o uso de aprendizado de máquina em contextos educativos.",
+      "acoes": [
+        {
+          "ferramenta": "buscar_livros",
+          "argumentos": {
+            "limite": 2,
+            "tema": "machine learning education"
+          }
+        },
+        {
+          "ferramenta": "buscar_livros",
+          "argumentos": {
+            "tema": "\"machine learning in education\"",
+            "limite": 5
+          }
+        }
+      ],
+      "observacoes": [
+        {
+          "ferramenta": "buscar_livros",
+          "resultado": "{\"fonte\": \"Open Library\", \"consulta\": \"machine learning education\", \"total_encontrado\": 579, \"resultados\": [{\"titulo\": \"The Time Machine\", \"autores\": [\"H. G. Wells\"], \"ano\": 1895, \"url\": \"https://openlibrary.org/works/OL52267W\"}, {\"titulo\": \"The homework Machine\", \"autores\": [\"Dan Gutman\"], \"ano\": 2006, \"url\": \"https://openlibrary.org/works/OL41322W\"}]}"
+        },
+        {
+          "ferramenta": "buscar_livros",
+          "resultado": "{\"fonte\": \"Open Library\", \"consulta\": \"\\\"machine learning in education\\\"\", \"total_encontrado\": 2, \"resultados\": [{\"titulo\": \"Analysis of a Machine Learning in Education System\", \"autores\": [\"Lata Menon\", \"Pradip P. Chatterjjee\", \"Prof. Mange Amar Vilasrao\"], \"ano\": 2022, \"url\": \"https://openlibrary.org/works/OL28437669W\"}, {\"titulo\": \"Machine Learning in Educational Sciences\", \"autores\": [\"Myint Swe Khine\"], \"ano\": 2024, \"url\": \"https://openlibrary.org/works/OL37589506W\"}]}"
+        }
+      ],
+      "avaliacao": "aprovado",
+      "resultado_observado": "Tema mantido. Duas chamadas à Open Library; a consulta entre aspas trouxe dois livros pertinentes."
+    },
+    {
+      "id": "referencias_do_historico",
+      "pedido": "Liste somente as referências que você encontrou, sem fazer novas buscas.",
+      "criterios": [
+        "Utilizar somente os registros anteriores.",
+        "Não fazer novas chamadas de ferramenta.",
+        "Não acrescentar títulos, autores ou links sem apoio nas observações."
+      ],
+      "conversa": "76e52bbb45c242ee8d77c1eb7019c6ec",
+      "status": "executado",
+      "resposta": "Aqui estão as referências encontradas nas buscas anteriores:\n\n**Artigos**\n1. **Online Education User Behaviour Based on Machine Learning**\n   - **Autores:** Não informados nos metadados da fonte.\n   - **Ano:** 2022\n   - **DOI/Link:** [10.38007/ml.2022.030403](https://doi.org/10.38007/ml.2022.030403)\n   - **Publicação:** *Machine Learning Theory and Practice*\n\n2. **ChatGPT in English Learning: A Machine Learning Perspective**\n   - **Autor:** Shinjae Park\n   - **Ano:** 2025\n   - **DOI/Link:** [10.46392/kjge.2025.19.2.191](https://doi.org/10.46392/kjge.2025.19.2.191)\n   - **Publicação:** *Korean Journal of General Education*\n\n**Livros**\n1. **Analysis of a Machine Learning in Education System**\n   - **Autores:** Lata Menon, Pradip P. Chatterjjee e Prof. Mange Amar Vilasrao\n   - **Ano da primeira publicação:** 2022\n   - **Link:** [Open Library](https://openlibrary.org/works/OL28437669W)\n\n2. **Machine Learning in Educational Sciences**\n   - **Autor:** Myint Swe Khine\n   - **Ano da primeira publicação:** 2024\n   - **Link:** [Open Library](https://openlibrary.org/works/OL37589506W)",
+      "acoes": [],
+      "observacoes": [],
+      "avaliacao": "aprovado",
+      "resultado_observado": "Quatro referências do histórico, sem novas chamadas e sem links acrescentados."
+    },
+    {
+      "id": "nova_conversa",
+      "pedido": "Quero livros sobre o mesmo tema.",
+      "criterios": [
+        "Pedir o tema, que não foi informado na nova conversa.",
+        "Não reutilizar o contexto da sessão anterior nem consultar ferramentas."
+      ],
+      "conversa": "47c4a1d2a9d84d82b683da552713ac3f",
+      "status": "executado",
+      "resposta": "Para que eu possa buscar livros sobre o mesmo tema, por favor, informe qual é o tema ou assunto que você deseja pesquisar.",
+      "acoes": [],
+      "observacoes": [],
+      "avaliacao": "aprovado",
+      "resultado_observado": "Nova conversa sem consultas; o modelo solicitou o tema em vez de recuperar o assunto anterior."
+    }
+  ],
+  "fim_utc": "2026-11-23T02:47:04.988284+00:00",
+  "status_execucao": "concluida",
+  "modo": "Gemini e APIs reais; sem respostas programadas",
+  "avaliacao": {
+    "resultado": "aprovado nos quatro casos executados",
+    "instante_utc": "2026-11-23T02:48:16.243483+00:00",
+    "metodo": "Conferência das respostas com títulos, autoria, datas, links, ações e histórico registrados.",
+    "limites": "Resultado restrito aos quatro casos; não mede precisão geral, qualidade científica ou acesso integral."
+  }
+}

@@ -156,18 +156,19 @@ com Gemini, esse histórico é enviado ao provedor para compor o contexto.
 
 | Caso | Validação | Resultado observado |
 | --- | --- | --- |
-| Pesquisar artigos e livros | Consultar ambas as fontes e reunir referências | As APIs retornaram dois registros cada; o teste de integração percorreu as duas ferramentas |
-| Continuar a pesquisa | Recuperar o tema da pergunta anterior | O histórico chegou à segunda invocação e o tema foi mantido nos testes |
-| Filtrar artigos por ano | Enviar o filtro temporal ao Crossref | O parâmetro foi conferido no teste e a consulta filtrada foi executada na API |
-| Iniciar outra conversa | Separar o contexto anterior | Os testes de sessão e do comando `/novo` passaram |
+| Pesquisar artigos e livros | Consultar ambas as fontes e reunir referências | Gemini consultou Crossref e Open Library e apresentou dois artigos e dois livros |
+| Continuar a pesquisa | Recuperar o tema da pergunta anterior | Gemini manteve o tema e refinou a consulta de livros após receber resultados fora do assunto |
+| Filtrar artigos por ano | Enviar o filtro temporal ao Crossref | A chamada real usou `ano_minimo=2020` e retornou artigos de 2022 e 2025 |
+| Reunir referências do histórico | Usar somente dados já encontrados | Quatro referências foram listadas sem novas chamadas ou acréscimo de links |
+| Iniciar outra conversa | Separar o contexto anterior | Após o reinício, Gemini pediu o tema e não reutilizou as referências anteriores |
 | Tratar falhas | Informar problemas sem inventar registros | Foram testados timeout, HTTP 429/503, listas vazias, JSON inválido e campos ausentes |
 | Interromper repetições | Aplicar o limite de passos | O teste interrompeu o ciclo e iniciou outra sessão |
 
-Foram executados **31 testes automatizados**, a demonstração em linha de comando
-e consultas reais às duas APIs. Os testes do agente usam respostas controladas
-para conferir ferramentas e memória. **A validação da conversa com Gemini permanece
-pendente, pois não havia chave configurada no ambiente de teste.** O roteiro e as
-evidências estão em [docs/TESTES.md](docs/TESTES.md).
+Foram executados **35 testes automatizados** e **quatro casos práticos com Gemini
+3.5 Flash-Lite e as APIs reais**, em 22/11/2026. Os quatro casos foram aprovados
+após conferir as respostas com os metadados, as ações e o histórico registrados.
+A demonstração offline foi verificada separadamente. O relatório e as evidências
+estão em [docs/TESTES.md](docs/TESTES.md).
 
 Comandos de verificação:
 
@@ -179,9 +180,19 @@ Comandos de verificação:
 ```
 
 O último comando consulta as APIs reais e salva o resultado em
-`docs/evidencias/apis_reais.json`. Os demais testes não precisam de internet ou
-credenciais. O workflow do GitHub executa testes, análise estática, formatação e
-demonstração a cada atualização do repositório.
+`docs/evidencias/apis_reais.json`. Os testes automatizados não precisam de internet
+ou credenciais. O workflow do GitHub executa testes, análise estática, formatação
+e demonstração a cada atualização do repositório.
+
+Para repetir os quatro casos com o modelo real, depois de configurar `.env`:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.validar_agente
+```
+
+O registro é salvo em `docs/evidencias/gemini_real.json`. O comando registra a
+execução; a aprovação exige conferir os critérios com as respostas. A execução
+documentada também está disponível em [formato de texto](docs/evidencias/gemini_real.txt).
 
 ## Organização do código
 
@@ -193,6 +204,7 @@ pesquisafacil/cli.py          Interface de linha de comando
 pesquisafacil/demo.py         Demonstração offline
 tests/                       Testes das ferramentas, do agente e da interface
 scripts/validar_servicos.py   Verificação das APIs reais
+scripts/validar_agente.py     Registro dos quatro casos com Gemini
 data/                        Dados utilizados pela demonstração
 docs/TESTES.md               Casos de uso e resultados
 docs/REQUISITOS.md           Conferência dos itens do enunciado
@@ -212,11 +224,14 @@ copiar os metadados e reunir as referências. Ao mudar o recorte, precisa repeti
 parte desse processo. A aplicação centraliza as consultas e reaproveita o contexto
 da conversa para os próximos pedidos.
 
-O benefício esperado é reduzir a repetição e a organização manual das buscas.
-As ferramentas fornecem dados dos catálogos, e o modelo decide como utilizá-las
-e apresentar os resultados. O agente não substitui a conferência das referências
-nem a leitura dos textos. Não foi realizado um estudo de tempo ou de precisão
-com usuários para medir esse benefício.
+Nos testes práticos, o agente manteve o assunto entre pedidos, refinou uma busca
+de livros que havia retornado títulos fora do tema e reuniu quatro referências
+sem uma nova consulta. Na abordagem manual, essas ações exigiriam repetir o tema,
+reformular a busca no catálogo e organizar os registros encontrados.
+
+O agente não substitui a conferência das referências nem a leitura dos textos.
+Não foi realizado um estudo de tempo ou de precisão com usuários para quantificar
+o benefício observado nesses casos.
 
 ## Entrega
 

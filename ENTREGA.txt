@@ -13,7 +13,8 @@ Conteúdo: código .py, README, dependências, testes e evidências.
 Conferência do enunciado: docs/REQUISITOS.md.
 
 Para usar Gemini, preencha GOOGLE_API_KEY em um arquivo .env local.
-A demonstração offline usa respostas programadas. A validação da conversa com
-Gemini permanece pendente; o roteiro está em docs/TESTES.md.
+A demonstração offline usa respostas programadas.
+O item 8 foi concluído com quatro casos práticos usando Gemini e as APIs reais.
+Resultados: docs/TESTES.md e docs/evidencias/gemini_real.json.
 
 A submissão no ambiente acadêmico deve ser realizada pelo autor.

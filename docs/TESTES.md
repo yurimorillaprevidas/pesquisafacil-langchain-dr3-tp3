@@ -1,74 +1,131 @@
 # Testes
 
-O projeto foi verificado com Python 3.12.15, LangChain 1.5.2, LangGraph 1.2.24 e
-HTTPX 0.28.1. Os testes automatizados utilizam respostas controladas para os
-serviços externos; o grafo, as ferramentas e o armazenamento do histórico são
-os utilizados pela aplicação.
+Foram executados quatro casos práticos com **Gemini 3.5 Flash-Lite**, Crossref e
+Open Library em **22/11/2026, às 23h46, horário de São Paulo**. As respostas foram
+conferidas com os metadados e as chamadas registradas. Também foram executados
+35 testes automatizados e a demonstração offline.
 
-## Casos de uso
+Ambiente: Python 3.12.15, LangChain 1.5.2, `langchain-google-genai` 4.5.2,
+LangGraph 1.2.24 e HTTPX 0.28.1.
 
-### 1. Buscar artigos e livros
+## Casos práticos com Gemini
 
-**Pedido:** “Encontre 2 artigos e 2 livros sobre machine learning.”
+### 1. Buscar artigos com filtro de ano
 
-**Esperado:** consultar Crossref e Open Library, reunir os registros e indicar
-a fonte de cada referência.
+**Pedido:** “Busque 2 artigos sobre aprendizado de máquina em educação desde 2020.”
 
-**Observado:** o teste de integração chamou `buscar_artigos`, recebeu o resultado
-como `ToolMessage` e então chamou `buscar_livros`. A demonstração apresentou os
-quatro registros dos dados salvos. Nas consultas reais, cada API também retornou
-dois registros. Veja [apis_reais.json](evidencias/apis_reais.json).
+**Esperado:** utilizar o Crossref com filtro de ano e apresentar referências
+fiéis aos dados recebidos.
 
-### 2. Continuar uma pesquisa
+**Observado:** o agente traduziu a consulta para `machine learning in education`
+e chamou `buscar_artigos` com `limite=2` e `ano_minimo=2020`. Foram retornados
+dois artigos, publicados em 2022 e 2025. Títulos, ano, autoria disponível e links
+DOI foram conferidos. No registro sem autoria, a resposta informou a ausência
+em vez de atribuir um nome. O agente também deixou claro que não havia lido
+os textos integrais.
 
-**Pedido:** após o caso anterior, “Agora mostre só livros sobre o mesmo tema.”
+**Resultado:** aprovado.
 
-**Esperado:** manter `machine learning` como tema e consultar apenas livros.
+### 2. Continuar a pesquisa e refinar a busca de livros
 
-**Observado:** a segunda invocação recuperou o histórico e reutilizou o tema.
-Outro teste conferiu o histórico com o assunto `diabetes`. Depois de iniciar uma
-nova conversa, o modelo de teste deixou de receber o assunto anterior. A
-demonstração também solicita o tema quando a continuação chega sem histórico.
+**Pedido:** “Agora encontre 2 livros sobre o mesmo tema.”
 
-### 3. Restringir o período dos artigos
+**Esperado:** recuperar o tema anterior, usar a ferramenta de livros e selecionar
+referências relacionadas a aprendizado de máquina na educação.
 
-**Entrada:** `buscar_artigos(tema="machine learning", limite=2, ano_minimo=2020)`.
+**Observado:** o agente manteve o tema e consultou a Open Library. A primeira
+busca, `machine learning education`, trouxe dois livros de ficção que não
+correspondiam ao assunto. Ao observar esses resultados, o agente executou uma
+segunda chamada com a expressão exata `"machine learning in education"` e
+`limite=5`. O catálogo retornou dois registros pertinentes:
 
-**Esperado:** enviar o filtro temporal ao serviço antes de obter os resultados.
+- *Analysis of a Machine Learning in Education System*, de Lata Menon,
+  Pradip P. Chatterjjee e Prof. Mange Amar Vilasrao, de 2022.
+- *Machine Learning in Educational Sciences*, de Myint Swe Khine, de 2024.
 
-**Observado:** o teste conferiu o parâmetro
-`filter=type:journal-article,from-pub-date:2020-01-01`. A consulta real filtrada
-está no arquivo de evidências. A ferramenta de livros não aplica esse filtro;
-seu ano corresponde à primeira publicação registrada no catálogo.
+A resposta apresentou esses dois livros, com títulos, autores, anos e links
+iguais aos retornados. Os livros de ficção não foram recomendados. As duas
+chamadas estão registradas na evidência, mostrando o ciclo de ação, observação
+e refinamento da consulta.
 
-### 4. Tratar ausência de dados e falhas
+**Resultado:** aprovado.
 
-**Entradas:** tema vazio, limites fora do intervalo, campos obrigatórios ausentes,
-tipos inválidos, lista vazia, timeout, HTTP 429/503 e JSON inesperado.
+### 3. Reunir somente as referências do histórico
 
-**Esperado:** impedir requisições inválidas e distinguir falhas de consultas sem
-resultados. Campos ausentes não devem ser preenchidos com informações inventadas.
+**Pedido:** “Liste somente as referências que você encontrou, sem fazer novas buscas.”
 
-**Observado:** os testes retornaram os códigos de erro previstos e listas vazias
-quando apropriado. Autoria e data ausentes não interromperam a aplicação. Erros
-de esquema retornaram JSON serializado pelo validador do LangChain.
+**Esperado:** utilizar o histórico e não adicionar referências sem apoio nas
+observações anteriores.
 
-### 5. Controlar a execução e reiniciar a conversa
+**Observado:** foram listados os dois artigos e os dois livros pertinentes dos
+casos anteriores. Não houve nova chamada de ferramenta. Títulos, autoria,
+datas e os quatro links foram conferidos com os registros anteriores; não
+foram acrescentados outros links ou títulos.
 
-**Esperado:** interromper chamadas repetidas, separar o contexto ao usar `/novo`
-e orientar a configuração quando não houver chave.
+**Resultado:** aprovado.
 
-**Observado:** o limite de passos interrompeu um modelo que repetia ações e
-renovou a sessão. Os comandos `/novo` e `/sair` passaram pelo teste da interface.
-Sem chave, a consulta encerrou com código 2 e instrução de configuração. Falhas
-externas durante a consulta encerraram com código 1, sem imprimir detalhes
-internos do provedor.
+### 4. Iniciar uma conversa sem o contexto anterior
 
-## Resultados e reprodução
+**Procedimento:** iniciar uma nova conversa, equivalente ao comando `/novo`,
+e enviar “Quero livros sobre o mesmo tema.”
 
-Os **31 testes automatizados passaram**. A análise com Ruff e a verificação de
-formatação também passaram. A demonstração executou duas perguntas e três
-chamadas de ferramenta.
+**Esperado:** pedir o tema, pois ele não foi informado nessa nova conversa.
+
+**Observado:** o identificador da conversa mudou. Gemini respondeu:
+
+> Para que eu possa buscar livros sobre o mesmo tema, por favor, informe qual é o tema ou assunto que você deseja pesquisar.
+
+Não houve consulta a ferramentas nem recuperação das referências anteriores.
+
+**Resultado:** aprovado.
+
+## Evidências da execução real
+
+- [Registro completo em JSON](evidencias/gemini_real.json): modelo, versões,
+  horários, pedidos, ações, observações, respostas e avaliação de cada caso.
+- [Registro em texto](evidencias/gemini_real.txt): a mesma execução em formato
+  de leitura direta.
+- [Consultas independentes às APIs](evidencias/apis_reais.json).
+
+Os três primeiros pedidos utilizaram a mesma conversa. O quarto utilizou outra
+conversa. Ao todo, foram realizadas três chamadas de ferramenta: uma ao Crossref
+e duas à Open Library. As respostas vieram de Gemini; não foram usadas respostas
+programadas ou cópias locais dos catálogos nesses quatro casos.
+
+## Testes automatizados
+
+Os **35 testes passaram**. Eles verificam:
+
+- Integração entre o grafo, as ferramentas e as observações.
+- Preservação do tema e isolamento entre conversas.
+- Filtro temporal e normalização dos metadados.
+- Entrada inválida, campos ausentes, listas vazias, timeout, HTTP 429/503 e JSON inválido.
+- Limite de passos, configuração, comandos da interface e mensagens de erro.
+- Registro dos quatro casos sem criar evidência real quando falta chave.
+
+Esses testes usam respostas controladas para os serviços externos, mantendo o
+grafo, as ferramentas e a memória da aplicação. São independentes da execução
+com Gemini relatada acima. A análise com Ruff e a verificação de formatação
+também passaram.
+
+- [Testes e verificações locais](evidencias/verificacao.txt).
+- [Demonstração offline](evidencias/demo.txt): usa respostas programadas e dados
+  salvos em `data/`, identificados como simulação.
+
+## Reprodução
+
+Depois de instalar as dependências e configurar `GOOGLE_API_KEY` no `.env`:
+
+```text
+python -m scripts.validar_agente
+```
+
+O comando executa os quatro pedidos com Gemini e as APIs reais e grava
+`docs/evidencias/gemini_real.json`. A marcação `executado` indica que houve
+resposta; a aprovação exige conferir os critérios com as respostas. Repetir o
+comando substitui o registro anterior. O modo manual é `python app.py --rastro`.
+
+Para as demais verificações:
 
 ```text
 python -m pytest -q
@@ -78,36 +135,26 @@ python app.py --demo
 python -m scripts.validar_servicos
 ```
 
-- [Execução da demonstração](evidencias/demo.txt).
-- [Resultados das APIs reais](evidencias/apis_reais.json).
-- [Testes e verificações locais](evidencias/verificacao.txt).
-
-As cópias dos dados em `data/` tornam a demonstração reproduzível sem internet.
-O script `validar_servicos` consulta as APIs reais; os resultados podem mudar
-conforme o catálogo ou a disponibilidade dos serviços.
-
-## Validação com Gemini
-
-Esta etapa permanece pendente porque não havia uma chave de API configurada.
-Os testes controlados verificam a integração e a memória, mas não avaliam a
-qualidade das respostas de Gemini.
-
-Após preencher `.env`, executar `python app.py --rastro` e realizar os pedidos:
-
-| Pedido | Critério de aprovação |
-| --- | --- |
-| “Busque 2 artigos sobre aprendizado de máquina em educação desde 2020.” | Chamada de artigos com o filtro de ano; título, autoria e DOI iguais aos retornados |
-| “Agora encontre 2 livros sobre o mesmo tema.” | Tema mantido e ferramenta de livros utilizada |
-| “Liste somente as referências que você encontrou.” | Nenhum registro incluído sem apoio nos resultados anteriores |
-| `/novo`, seguido de “Quero livros sobre o mesmo tema.” | Solicitação de esclarecimento por falta do assunto |
-
-Registrar o modelo, a data, as chamadas realizadas e a resposta observada para
-cada pedido. A conversa deve informar fontes e não alegar leitura dos textos
-integrais. Esta etapa é necessária para concluir a validação prática com o LLM.
+Os testes automatizados e a demonstração não precisam de credenciais ou rede.
+Os comandos de validação real dependem da disponibilidade do modelo e das APIs.
 
 ## Comparação com o processo manual
 
-Na abordagem manual, cada serviço precisa ser consultado separadamente e os
-metadados precisam ser reunidos pelo estudante. O agente centraliza as consultas
-e mantém o contexto dos refinamentos. A conferência das referências e a análise
-crítica dos textos continuam necessárias. Não foi medida uma economia de tempo.
+Sem o agente, o estudante precisaria pesquisar nos dois catálogos, reaplicar o
+tema, identificar os resultados fora do assunto, reformular a busca e reunir
+manualmente títulos, autores, datas e links. Nos casos executados, o agente
+realizou essas operações a partir dos pedidos em linguagem natural e manteve
+o contexto para organizar as quatro referências sem uma nova consulta.
+
+O refinamento da busca de livros mostra uma contribuição além de copiar dados:
+o agente utilizou a observação recebida para decidir outra ação antes da resposta.
+A ausência de autoria em um artigo foi preservada, o que facilita identificar
+quais informações ainda precisam ser conferidas pelo estudante.
+
+## Limites da avaliação
+
+Os quatro casos comprovam o funcionamento observado nesse recorte. Não medem
+a precisão geral de Gemini, a qualidade científica das obras ou uma economia
+de tempo com usuários. Resultados de catálogos podem ser incompletos ou pouco
+relacionados ao assunto; a seleção crítica e a leitura dos textos continuam
+necessárias. O agente não garante acesso gratuito ao texto integral.
