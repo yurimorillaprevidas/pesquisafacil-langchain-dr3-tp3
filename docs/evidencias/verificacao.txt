@@ -1,0 +1,9 @@
+> python -m pytest -q
+..........................                                               [100%]
+26 passed in 1.37s
+
+> python -m ruff check .
+All checks passed!
+
+> python -m ruff format --check .
+18 files already formatted

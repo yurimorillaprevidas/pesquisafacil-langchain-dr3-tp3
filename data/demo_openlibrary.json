@@ -1,0 +1,28 @@
+{
+  "numFound": 7386,
+  "start": 0,
+  "numFoundExact": true,
+  "num_found": 7386,
+  "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+  "q": "machine learning",
+  "offset": null,
+  "docs": [
+    {
+      "author_name": [
+        "Aurélien Géron"
+      ],
+      "first_publish_year": 2019,
+      "key": "/works/OL20709638W",
+      "title": "Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow"
+    },
+    {
+      "author_name": [
+        "Kevin P. Murphy",
+        "Kevin P. Murphy"
+      ],
+      "first_publish_year": 2012,
+      "key": "/works/OL16571885W",
+      "title": "Machine learning"
+    }
+  ]
+}

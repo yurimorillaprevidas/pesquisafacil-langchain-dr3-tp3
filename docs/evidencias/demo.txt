@@ -1,0 +1,33 @@
+DEMONSTRAÇÃO SIMULADA: modelo roteirizado + snapshots das APIs.
+Não chama Gemini nem internet; demonstra o grafo ReAct e a memória.
+
+Você> Encontre 2 artigos e 2 livros sobre machine learning.
+Ação: buscar_artigos({"tema": "machine learning", "limite": 2})
+Observação: Crossref: 2 registro(s).
+Ação: buscar_livros({"tema": "machine learning", "limite": 2})
+Observação: Open Library: 2 registro(s).
+
+PesquisaFácil> [Resposta roteirizada de demonstração] Tema: machine learning.
+
+Fonte: Crossref
+- Research Papers in Machine Learning — Pat Langley (1987). https://doi.org/10.1023/a%3A1022603230145
+- Machine Learning and Grammar Induction — Pat Langely (1987). https://doi.org/10.1023/a%3A1022808826027
+
+Fonte: Open Library
+- Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow — Aurélien Géron (2019). https://openlibrary.org/works/OL20709638W
+- Machine learning — Kevin P. Murphy, Kevin P. Murphy (2012). https://openlibrary.org/works/OL16571885W
+
+São metadados de um snapshot; o texto integral não foi consultado.
+
+Você> Agora mostre só livros sobre o mesmo tema.
+Ação: buscar_livros({"tema": "machine learning", "limite": 2})
+Observação: Open Library: 2 registro(s).
+
+PesquisaFácil> [Resposta roteirizada de demonstração] Tema: machine learning.
+
+Fonte: Open Library
+- Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow — Aurélien Géron (2019). https://openlibrary.org/works/OL20709638W
+- Machine learning — Kevin P. Murphy, Kevin P. Murphy (2012). https://openlibrary.org/works/OL16571885W
+
+São metadados de um snapshot; o texto integral não foi consultado.
+

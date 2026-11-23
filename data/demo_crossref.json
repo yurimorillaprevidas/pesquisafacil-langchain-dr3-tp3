@@ -1,0 +1,110 @@
+{
+  "status": "ok",
+  "message-type": "work-list",
+  "message-version": "1.0.0",
+  "message": {
+    "facets": {},
+    "total-results": 1790390,
+    "items": [
+      {
+        "published-print": {
+          "date-parts": [
+            [
+              1987,
+              11
+            ]
+          ]
+        },
+        "DOI": "10.1023/a:1022603230145",
+        "title": [
+          "Research Papers in Machine Learning"
+        ],
+        "author": [
+          {
+            "given": "Pat",
+            "family": "Langley",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "container-title": [
+          "Machine Learning"
+        ],
+        "issued": {
+          "date-parts": [
+            [
+              1987,
+              11
+            ]
+          ]
+        },
+        "published": {
+          "date-parts": [
+            [
+              1987,
+              11
+            ]
+          ]
+        }
+      },
+      {
+        "published-print": {
+          "date-parts": [
+            [
+              1987,
+              3
+            ]
+          ]
+        },
+        "DOI": "10.1023/a:1022808826027",
+        "title": [
+          "Machine Learning and Grammar Induction"
+        ],
+        "author": [
+          {
+            "given": "Pat",
+            "family": "Langely",
+            "sequence": "first",
+            "affiliation": [],
+            "role": [
+              {
+                "role": "author",
+                "vocabulary": "crossref"
+              }
+            ]
+          }
+        ],
+        "container-title": [
+          "Machine Learning"
+        ],
+        "issued": {
+          "date-parts": [
+            [
+              1987,
+              3
+            ]
+          ]
+        },
+        "published": {
+          "date-parts": [
+            [
+              1987,
+              3
+            ]
+          ]
+        }
+      }
+    ],
+    "items-per-page": 2,
+    "query": {
+      "start-index": 0,
+      "search-terms": null
+    }
+  }
+}

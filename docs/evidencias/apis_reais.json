@@ -1,0 +1,91 @@
+{
+  "instante_utc": "2026-11-23T00:07:53.942276+00:00",
+  "tipo": "APIs reais, sem execução do modelo Gemini",
+  "python": "3.12.15",
+  "versoes": {
+    "langchain": "1.5.2",
+    "langgraph": "1.2.24",
+    "httpx": "0.28.1"
+  },
+  "consultas": [
+    {
+      "fonte": "Crossref",
+      "consulta": "machine learning",
+      "total_encontrado": 1790390,
+      "resultados": [
+        {
+          "titulo": "Machine Learning and Concept Formation",
+          "autores": [
+            "Pat Langley"
+          ],
+          "ano": 1987,
+          "doi": "10.1023/a:1022896407371",
+          "url": "https://doi.org/10.1023/a%3A1022896407371",
+          "publicacao": "Machine Learning"
+        },
+        {
+          "titulo": "Research Papers in Machine Learning",
+          "autores": [
+            "Pat Langley"
+          ],
+          "ano": 1987,
+          "doi": "10.1023/a:1022603230145",
+          "url": "https://doi.org/10.1023/a%3A1022603230145",
+          "publicacao": "Machine Learning"
+        }
+      ]
+    },
+    {
+      "fonte": "Open Library",
+      "consulta": "machine learning",
+      "total_encontrado": 7386,
+      "resultados": [
+        {
+          "titulo": "Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow",
+          "autores": [
+            "Aurélien Géron"
+          ],
+          "ano": 2019,
+          "url": "https://openlibrary.org/works/OL20709638W"
+        },
+        {
+          "titulo": "Machine learning",
+          "autores": [
+            "Kevin P. Murphy",
+            "Kevin P. Murphy"
+          ],
+          "ano": 2012,
+          "url": "https://openlibrary.org/works/OL16571885W"
+        }
+      ]
+    },
+    {
+      "fonte": "Crossref",
+      "consulta": "machine learning",
+      "total_encontrado": 1168086,
+      "resultados": [
+        {
+          "titulo": "Machine learning for labor market matching",
+          "autores": [
+            "Sabrina Mühlbauer",
+            "Enzo Weber"
+          ],
+          "ano": 2026,
+          "doi": "10.1016/j.mlwa.2026.100861",
+          "url": "https://doi.org/10.1016/j.mlwa.2026.100861",
+          "publicacao": "Machine Learning with Applications"
+        },
+        {
+          "titulo": "Harnessing machine learning for decoding Caenorhabditis elegans behavior",
+          "autores": [
+            "Kamesh R. Babu"
+          ],
+          "ano": 2026,
+          "doi": "10.1016/j.mlwa.2026.100871",
+          "url": "https://doi.org/10.1016/j.mlwa.2026.100871",
+          "publicacao": "Machine Learning with Applications"
+        }
+      ]
+    }
+  ]
+}
