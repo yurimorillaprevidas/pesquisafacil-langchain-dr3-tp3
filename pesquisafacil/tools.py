@@ -1,5 +1,6 @@
 """Tools de leitura para duas APIs bibliográficas públicas."""
 
+import json
 import re
 from typing import Any
 from urllib.parse import quote
@@ -171,5 +172,8 @@ def create_tools(client: httpx.Client) -> list[BaseTool]:
 
     tools = [buscar_artigos, buscar_livros]
     for item in tools:
-        item.handle_validation_error = "Argumentos inválidos. Use os tipos indicados na ferramenta."
+        item.handle_validation_error = lambda error, source=item.name: json.dumps(
+            _error(source, "entrada_invalida", "Use os tipos indicados na ferramenta."),
+            ensure_ascii=False,
+        )
     return tools

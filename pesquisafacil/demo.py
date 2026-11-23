@@ -40,6 +40,9 @@ class DemoModel(BaseChatModel):
             if isinstance(message, AIMessage)
             for call in message.tool_calls
         ]
+        if books_only and not previous_calls:
+            result = AIMessage(content="Informe o tema para esta nova conversa.")
+            return ChatResult(generations=[ChatGeneration(message=result)])
         theme = (
             previous_calls[-1]["args"]["tema"]
             if books_only and previous_calls

@@ -45,18 +45,25 @@ class AgentError(RuntimeError):
     """Falha controlada de execução do agente."""
 
 
+class InputError(ValueError):
+    """Mensagem local segura sobre uma pergunta inválida."""
+
+
+class ConfigurationError(ValueError):
+    """Mensagem local segura sobre configuração ausente."""
+
+
 def create_gemini_model() -> ChatGoogleGenerativeAI:
     """Lê configuração do ambiente sem imprimir a chave."""
     key = (os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or "").strip()
     if not key:
-        raise ValueError("Configure GOOGLE_API_KEY no arquivo .env ou execute --demo.")
+        raise ConfigurationError("Configure GOOGLE_API_KEY no arquivo .env ou execute --demo.")
     model_name = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite").strip()
     if not model_name:
-        raise ValueError("GEMINI_MODEL não pode ficar vazio.")
+        raise ConfigurationError("GEMINI_MODEL não pode ficar vazio.")
     return ChatGoogleGenerativeAI(
         model=model_name,
         google_api_key=key,
-        temperature=0.2,
         timeout=30,
         max_retries=1,
     )
@@ -96,7 +103,7 @@ class ResearchSession:
     def ask(self, text: str) -> Turn:
         text = text.strip()
         if not text or len(text) > 4000:
-            raise ValueError("Digite uma pergunta entre 1 e 4000 caracteres.")
+            raise InputError("Digite uma pergunta entre 1 e 4000 caracteres.")
         try:
             state = self.agent.invoke({"messages": [HumanMessage(content=text)]}, self.config)
         except GraphRecursionError as error:

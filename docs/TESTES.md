@@ -5,7 +5,7 @@ Autor: Yuri Henrique Morilla Lima. Data local: 22/11/2026 (America/Sao_Paulo).
 ## O que foi executado
 
 - Python 3.12.15; LangChain 1.5.2; LangGraph 1.2.24; HTTPX 0.28.1.
-- 26 testes automatizados sem rede ou credenciais.
+- 31 testes automatizados sem rede ou credenciais.
 - `ruff check .` e `ruff format --check .` para código e formatação.
 - Demonstração CLI com duas perguntas e memória no mesmo processo.
 - Consultas reais no Crossref e na Open Library, sem usar um LLM.
@@ -63,6 +63,8 @@ requisição inválida e não inventar referências.
 Observado: ferramentas retornaram listas vazias e/ou códigos de erro apropriados;
 metadados opcionais foram tratados sem quebrar a aplicação. URLs de catálogo
 fora do formato permitido não foram transformadas em links.
+Erros de tipo/campo obrigatório no esquema também retornam JSON com código
+`entrada_invalida`, serializado como texto pelo validador LangChain.
 
 ### UC5 — limite e configuração
 
@@ -71,6 +73,9 @@ Observado: um modelo que sempre chama a mesma ferramenta foi interrompido pelo
 limite do grafo e a sessão foi renovada. Sem chave, a CLI explica como configurar
 `GOOGLE_API_KEY` e termina com código 2. Erros inesperados de provedor terminam
 com código 1 na consulta única e não expõem a mensagem bruta nem seus segredos.
+Os testes cobrem tanto `RuntimeError` quanto `ValueError` externo, inclusive
+durante a configuração. Somente exceções locais específicas podem exibir sua
+mensagem. A demo pede o tema quando recebe uma continuação sem histórico.
 
 ## Arquivos e reprodução
 

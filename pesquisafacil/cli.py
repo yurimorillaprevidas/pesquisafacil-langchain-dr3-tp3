@@ -8,7 +8,15 @@ from pathlib import Path
 import httpx
 from dotenv import load_dotenv
 
-from pesquisafacil.agent import AgentError, ResearchSession, Turn, build_agent, create_gemini_model
+from pesquisafacil.agent import (
+    AgentError,
+    ConfigurationError,
+    InputError,
+    ResearchSession,
+    Turn,
+    build_agent,
+    create_gemini_model,
+)
 from pesquisafacil.demo import DEMO_QUESTIONS, create_demo_session, demo_transport
 from pesquisafacil.tools import create_tools
 
@@ -58,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         model = create_gemini_model()
-    except ValueError as error:
+    except ConfigurationError as error:
         print(f"Configuração: {error}", file=sys.stderr)
         return 2
     except Exception:
@@ -96,7 +104,7 @@ def _ask_once(session: ResearchSession, question: str, full_trace: bool) -> int:
     try:
         print_turn(session.ask(question), full_trace)
         return 0
-    except (ValueError, AgentError) as error:
+    except (InputError, AgentError) as error:
         print(str(error), file=sys.stderr)
         return 2
     except Exception:

@@ -1,3 +1,5 @@
+import json
+
 import httpx
 import pytest
 
@@ -141,3 +143,13 @@ def test_null_article_metadata_does_not_crash():
     result = invoke(lambda request: httpx.Response(200, json=payload), tema="python")
     assert result["resultados"][0]["titulo"] == "Título não informado"
     assert result["resultados"][0]["ano"] is None
+
+
+@pytest.mark.parametrize("arguments", [{"tema": "python", "limite": []}, {}])
+def test_schema_errors_are_json_without_network(arguments):
+    def handler(request):
+        pytest.fail("O validador não deve consultar a rede.")
+
+    result = json.loads(invoke(handler, **arguments))
+    assert result["erro"]["codigo"] == "entrada_invalida"
+    assert result["resultados"] == []

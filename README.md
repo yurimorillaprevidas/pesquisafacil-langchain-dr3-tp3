@@ -1,14 +1,16 @@
 # PesquisaFácil — agente bibliográfico com LangChain
 
-**Autor:** Yuri Henrique Morilla Lima  
-**Disciplina:** Desenvolvimento de Data-Driven Apps com Python [26E4_3]  
+**Autor:** Yuri Henrique Morilla Lima
+
+**Disciplina:** Desenvolvimento de Data-Driven Apps com Python [26E4_3]
+
 **Atividade:** DR3 — TP3
 
 O PesquisaFácil ajuda estudantes a iniciar uma pesquisa bibliográfica: busca
 artigos no Crossref, livros na Open Library e mantém o contexto dos pedidos na
 conversa. O projeto usa Python, LangChain, o padrão ReAct e memória conversacional.
 
-**Situação da validação:** 26 testes automatizados passaram, as duas APIs foram
+**Situação da validação:** 31 testes automatizados passaram, as duas APIs foram
 consultadas com sucesso e a demonstração do grafo e da memória foi executada.
 **A geração com Gemini não foi executada nesta entrega**, pois o ambiente não
 dispunha de chave. O modo real requer sua chave; a demonstração usa um modelo
@@ -73,8 +75,9 @@ Copy-Item .env.example .env
 .\.venv\Scripts\python.exe app.py
 ```
 
-O modelo configurado é `gemini-3.5-flash-lite`, com temperatura 0,2, timeout de
-30 segundos e uma repetição de tentativa no provedor. É um modelo com suporte a
+O modelo configurado é `gemini-3.5-flash-lite`, com os parâmetros de amostragem
+padrão do modelo, timeout de 30 segundos e uma tentativa total por chamada ao
+provedor (`max_retries=1` nesta versão do adaptador). É um modelo com suporte a
 function calling, adequado a este fluxo de seleção de ferramentas; o nome pode
 ser alterado por `GEMINI_MODEL` no `.env`. Disponibilidade, cotas e eventuais
 cobranças dependem da conta Google. Veja a [documentação do modelo](https://aistudio.google.com/docs/models/gemini-3.5-flash-lite)

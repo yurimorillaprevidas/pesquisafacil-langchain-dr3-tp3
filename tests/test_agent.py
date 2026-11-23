@@ -5,6 +5,7 @@ import pytest
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 from pesquisafacil.agent import AgentError, ResearchSession, build_agent, create_gemini_model
+from pesquisafacil.demo import create_demo_session, demo_transport
 from pesquisafacil.tools import create_tools
 from tests.helpers import ScenarioModel
 
@@ -121,3 +122,12 @@ def test_missing_key_has_clear_configuration_message(monkeypatch):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
     with pytest.raises(ValueError, match="GOOGLE_API_KEY"):
         create_gemini_model()
+
+
+def test_demo_followup_without_history_requests_topic():
+    with httpx.Client(transport=httpx.MockTransport(demo_transport)) as client:
+        session = create_demo_session(client)
+        turn = session.ask("Agora mostre só livros sobre o mesmo tema.")
+    assert turn.actions == []
+    assert "tema" in turn.answer.lower()
+    assert "machine learning" not in turn.answer

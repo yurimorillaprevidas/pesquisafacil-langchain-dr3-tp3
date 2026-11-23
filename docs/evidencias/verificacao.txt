@@ -1,6 +1,6 @@
 > python -m pytest -q
-..........................                                               [100%]
-26 passed in 1.37s
+...............................                                          [100%]
+31 passed in 1.32s
 
 > python -m ruff check .
 All checks passed!

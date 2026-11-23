@@ -30,4 +30,3 @@ Fonte: Open Library
 - Machine learning — Kevin P. Murphy, Kevin P. Murphy (2012). https://openlibrary.org/works/OL16571885W
 
 São metadados de um snapshot; o texto integral não foi consultado.
-

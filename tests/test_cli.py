@@ -1,3 +1,4 @@
+import pytest
 from langchain_core.messages import AIMessage, HumanMessage
 
 from pesquisafacil import cli
@@ -39,13 +40,26 @@ def test_new_command_restarts_context(monkeypatch, tmp_path, capsys):
     assert "Qual tema?" in output
 
 
-def test_provider_error_does_not_leak_details(monkeypatch, tmp_path, capsys):
+@pytest.mark.parametrize("error_type", [RuntimeError, ValueError])
+def test_provider_error_does_not_leak_details(monkeypatch, tmp_path, capsys, error_type):
     def respond(messages):
-        raise RuntimeError("secret=provider-key-never-print")
+        raise error_type("secret=provider-key-never-print")
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(cli, "create_gemini_model", lambda: ScenarioModel(responder=respond))
     assert cli.main(["--pergunta", "Busque artigos sobre python"]) == 1
+    error = capsys.readouterr().err
+    assert "Não foi possível" in error
+    assert "provider-key" not in error
+
+
+def test_provider_initialization_value_error_is_sanitized(monkeypatch, tmp_path, capsys):
+    def initialize():
+        raise ValueError("secret=provider-key-never-print")
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(cli, "create_gemini_model", initialize)
+    assert cli.main(["--pergunta", "Busque livros"]) == 2
     error = capsys.readouterr().err
     assert "Não foi possível" in error
     assert "provider-key" not in error

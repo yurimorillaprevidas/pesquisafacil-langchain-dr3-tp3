@@ -31,19 +31,19 @@ O grafo e o prompt ficam em `agent.py`; a CLI em `cli.py`; a simulação em `dem
 **Files:** `pesquisafacil/tools.py`, `tests/test_tools.py`.
 **Interfaces:** `create_tools(client: httpx.Client) -> list[BaseTool]`.
 
-- [ ] Escrever testes de normalização, filtro, limites, erros e metadados incompletos.
-- [ ] Executar `python -m pytest tests/test_tools.py -q`; observar falha antes do código.
-- [ ] Implementar clientes e ferramentas; executar novamente e obter sucesso.
+- [x] Escrever testes de normalização, filtro, limites, erros e metadados incompletos.
+- [x] Executar `python -m pytest tests/test_tools.py -q`; observar falha antes do código.
+- [x] Implementar clientes e ferramentas; executar novamente e obter sucesso.
 
 ## Task 2: agente, memória e demonstração
 
 **Files:** `pesquisafacil/agent.py`, `pesquisafacil/demo.py`, `tests/test_agent.py`.
 **Interfaces:** `build_agent(model, tools)` e `ResearchSession.ask(text)`.
 
-- [ ] Testar duas ferramentas sequenciais com observações retornando ao modelo.
-- [ ] Testar preservação de histórico, nova conversa e limite de passos.
-- [ ] Observar falhas, implementar e executar toda a suíte.
-- [ ] Adicionar demonstração roteirizada explícita usando o mesmo grafo e tools.
+- [x] Testar duas ferramentas sequenciais com observações retornando ao modelo.
+- [x] Testar preservação de histórico, nova conversa e limite de passos.
+- [x] Observar falhas, implementar e executar toda a suíte.
+- [x] Adicionar demonstração roteirizada explícita usando o mesmo grafo e tools.
 
 ## Task 3: CLI, evidências e entrega
 
@@ -51,8 +51,8 @@ O grafo e o prompt ficam em `agent.py`; a CLI em `cli.py`; a simulação em `dem
 `scripts/validar_servicos.py`, `.github/workflows/tests.yml`, `docs/evidencias/`.
 **Interfaces:** `main(argv=None) -> int`, pergunta única, chat e `--demo`.
 
-- [ ] Testar entrada inválida, chave ausente e comandos `/novo` e `/sair`.
-- [ ] Implementar e executar `pytest`, `ruff check`, `ruff format --check`.
-- [ ] Rodar demonstração e APIs reais; documentar saídas e limitações.
+- [x] Testar entrada inválida, chave ausente e comandos `/novo` e `/sair`.
+- [x] Implementar e executar `pytest`, `ruff check`, `ruff format --check`.
+- [x] Rodar demonstração e APIs reais; documentar saídas e limitações.
 - [ ] Revisar segurança, requisitos e execução a partir do ZIP extraído.
 - [ ] Publicar repositório público e criar ZIP com nome informado pelo autor.
